@@ -44,10 +44,10 @@ LANGUAGE sql
 STABLE
 SECURITY DEFINER
 AS $$
-  SELECT COALESCE(
-    (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin',
-    FALSE
-  );
+  SELECT
+    COALESCE((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', FALSE)
+    OR
+    COALESCE((SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin', FALSE)
 $$;
 
 
